@@ -161,7 +161,7 @@ def manually_fill():
             def create_csv():
                 import csv
                 cursor.execute("select * from " + DB_table_name + ";")
-                csv_name='C:/Users/indu shakya/Desktop/projects/Attendace_management_system/Attendance/Manually Attendance/'+DB_table_name+'.csv'
+                csv_name='C:/Users/Deepak/Desktop/Attendence_Management_System-master/Attendance/Manually Attendance/'+DB_table_name+'.csv'
                 with open(csv_name, "w") as csv_file:
                     csv_writer = csv.writer(csv_file)
                     csv_writer.writerow([i[0] for i in cursor.description])  # write headers
@@ -215,7 +215,7 @@ def manually_fill():
 
             def attf():
                 import subprocess
-                subprocess.Popen(r'explorer /select,"C:/Users/indu shakya/Desktop/projects/Attendace_management_system/Attendance/Manually Attendance/"')
+                subprocess.Popen(r'explorer /select,"C:/Users/Deepak/Desktop/Attendence_Management_System-master/Attendance/Manually Attendance/"')
 
             attf = tk.Button(MFW,  text="Check Sheets",command=attf,fg="black"  ,bg="#FFA900"  ,width=12  ,height=1 ,activebackground = "Red" ,font=('times', 14, ' bold '))
             attf.place(x=730, y=410)
@@ -388,14 +388,16 @@ def subjectchoose():
                 date = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d')
                 timeStamp = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S')
                 Hour, Minute, Second = timeStamp.split(":")
-                fileName = "Attendance/" + Subject + "_" + date + "_" + Hour + "-" + Minute + "-" + Second + ".csv"
+                # fileName = "Attendance/" + Subject + "_" + date + "_" + Hour + "-" + Minute + "-" + Second + ".csv"
+                fileName = "Attendance/" + Subject + "_" + date + "_" + Hour +  ".csv"
                 attendance = attendance.drop_duplicates(['Enrollment'], keep='first')
                 print(attendance)
                 attendance.to_csv(fileName, index=False)
 
                 ##Create table for Attendance
                 date_for_DB = datetime.datetime.fromtimestamp(ts).strftime('%Y_%m_%d')
-                DB_Table_name = str( Subject + "_" + date_for_DB + "_Time_" + Hour + "_" + Minute + "_" + Second)
+                # DB_Table_name = str( Subject + "_" + date_for_DB + "_Time_" + Hour + "_" + Minute + "_" + Second)
+                DB_Table_name = str( Subject + "_" + date_for_DB + "_Time_" + Hour )
                 import pymysql
 
                 ###Connect to the database
@@ -406,7 +408,7 @@ def subjectchoose():
                 except Exception as e:
                     print(e)
 
-                sql = "CREATE TABLE " + DB_Table_name + """
+                sql = "CREATE TABLE IF NOT EXISTS" + DB_Table_name + """
                 (ID INT NOT NULL AUTO_INCREMENT,
                  ENROLLMENT varchar(100) NOT NULL,
                  NAME VARCHAR(50) NOT NULL,
@@ -436,7 +438,7 @@ def subjectchoose():
                 root = tkinter.Tk()
                 root.title("Attendance of " + Subject)
                 root.configure(background='snow')
-                cs = 'C:/Users/indu shakya/Desktop/projects/Attendace_management_system/' + fileName
+                cs = 'C:/Users/Deepak/Desktop/Attendence_Management_System-master/' + fileName
                 with open(cs, newline="") as file:
                     reader = csv.reader(file)
                     r = 0
@@ -464,7 +466,7 @@ def subjectchoose():
 
     def Attf():
         import subprocess
-        subprocess.Popen(r'explorer /select,"C:/Users/indu shakya/Desktop/projects/Attendace_management_system/Attendance/-------Check atttendance-------"')
+        subprocess.Popen(r'explorer /select,"C:/Users/Deepak/Desktop/Attendence_Management_System-master/Attendance/"')
 
     attf = tk.Button(windo,  text="Check Sheets",command=Attf,fg="black"  ,bg="#FFA900"  ,width=12  ,height=1 ,activebackground = "Red" ,font=('times', 14, ' bold '))
     attf.place(x=430, y=255)
@@ -500,7 +502,7 @@ def admin_panel():
                 root.title("Student Details")
                 root.configure(background='snow')
 
-                cs = 'C:/Users/indu shakya/Desktop/projects/Attendace_management_system/StudentDetails/StudentDetails.csv'
+                cs = 'C:/Users/Deepak/Desktop/Attendence_Management_System-master/StudentDetails/StudentDetails.csv'
                 with open(cs, newline="") as file:
                     reader = csv.reader(file)
                     r = 0
