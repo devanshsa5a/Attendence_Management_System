@@ -396,8 +396,12 @@ def subjectchoose():
                 fileName = "Attendance/" + Subject + "_" + date + "_" + Hour +  ".csv"
                 attendance = attendance.drop_duplicates(['Enrollment'], keep='first')
                 print(attendance)
-                attendance.to_csv(fileName,mode='a', index=False,header=False)
-
+                import os.path
+                file_exists = os.path.exists(fileName)
+                if file_exists:
+                    attendance.to_csv(fileName,mode='a', index=False,header=False)
+                else:
+                    attendance.to_csv(fileName,index=False)
                 ##Create table for Attendance
                 date_for_DB = datetime.datetime.fromtimestamp(ts).strftime('%Y_%m_%d')
                 # DB_Table_name = str( Subject + "_" + date_for_DB + "_Time_" + Hour + "_" + Minute + "_" + Second)
