@@ -80,6 +80,7 @@ def manually_fill():
 
         try:
             cursor.execute(sql)  ##for create a table
+            connection.commit()
         except Exception as ex:
             print(ex)  #
 
@@ -147,11 +148,13 @@ def manually_fill():
                 else:
                     time = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S')
                     Hour, Minute, Second = time.split(":")
-                    Insert_data = "INSERT INTO " + DB_table_name + " (ID,ENROLLMENT,NAME,DATE,TIME) VALUES (0, %s, %s, %s,%s)"
+                    Insert_data = "INSERT INTO " + DB_table_name + " (ENROLLMENT,NAME,DATE,TIME) VALUES (%s, %s, %s,%s)"
                     Date = datetime.datetime.fromtimestamp(ts).strftime('%Y_%m_%d')
                     # Insert_data = "INSERT INTO " + DB_table_name + " (ID,ENROLLMENT,NAME,DATE,TIME) VALUES (0, {0}, {1}, {2},{3})".format(str(ENROLLMENT), str(STUDENT), str(Date), str(time))
                     VALUES = (str(ENROLLMENT), str(STUDENT), str(Date), str(time))
                     cursor.execute(Insert_data, VALUES)
+                    connection.commit()
+                    connection.close()
                     # try:
                     # except Exception as e:
                     #     print(e)
@@ -161,8 +164,9 @@ def manually_fill():
             def create_csv():
                 import csv
                 cursor.execute("select * from " + DB_table_name + ";")
-                csv_name='C:/Users/indu shakya/Desktop/projects/Attendace_management_system/Attendance/Manually Attendance/'+DB_table_name+'.csv'
-                with open(csv_name, "w") as csv_file:
+                csv_name='C:/Users/HP/Desktop/Attendence_Management_System/Attendence/Manually Attendance/'+DB_table_name+'.csv'
+                with open(csv_name, "a+") as csv_file:
+                    
                     csv_writer = csv.writer(csv_file)
                     csv_writer.writerow([i[0] for i in cursor.description])  # write headers
                     csv_writer.writerows(cursor)
@@ -215,7 +219,7 @@ def manually_fill():
 
             def attf():
                 import subprocess
-                subprocess.Popen(r'explorer /select,"C:/Users/indu shakya/Desktop/projects/Attendace_management_system/Attendance/Manually Attendance/"')
+                subprocess.Popen(r'explorer /select,"C:/Users/HP/Desktop/Attendence_Management_System/Attendence/Manually Attendance/"')
 
             attf = tk.Button(MFW,  text="Check Sheets",command=attf,fg="black"  ,bg="#FFA900"  ,width=12  ,height=1 ,activebackground = "Red" ,font=('times', 14, ' bold '))
             attf.place(x=730, y=410)
@@ -388,25 +392,28 @@ def subjectchoose():
                 date = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d')
                 timeStamp = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S')
                 Hour, Minute, Second = timeStamp.split(":")
-                fileName = "Attendance/" + Subject + "_" + date + "_" + Hour + "-" + Minute + "-" + Second + ".csv"
+                # fileName = "Attendance/" + Subject + "_" + date + "_" + Hour + "-" + Minute + "-" + Second + ".csv"
+                fileName = "Attendance/" + Subject + "_" + date + "_" + Hour +  ".csv"
                 attendance = attendance.drop_duplicates(['Enrollment'], keep='first')
                 print(attendance)
-                attendance.to_csv(fileName, index=False)
+                attendance.to_csv(fileName,mode='a', index=False,header=False)
 
                 ##Create table for Attendance
                 date_for_DB = datetime.datetime.fromtimestamp(ts).strftime('%Y_%m_%d')
-                DB_Table_name = str( Subject + "_" + date_for_DB + "_Time_" + Hour + "_" + Minute + "_" + Second)
+                # DB_Table_name = str( Subject + "_" + date_for_DB + "_Time_" + Hour + "_" + Minute + "_" + Second)
+                DB_Table_name = str( Subject + "_" + date_for_DB + "_Time_" + Hour )
                 import pymysql
 
                 ###Connect to the database
                 global cursor2
+                global connection
                 try:
                     connection = pymysql.connect(host='localhost', user='root', password='', db='Face_reco_fill')
                     cursor2 = connection.cursor()
                 except Exception as e:
                     print(e)
 
-                sql = "CREATE TABLE " + DB_Table_name + """
+                sql = "CREATE TABLE IF NOT EXISTS " + DB_Table_name + """
                 (ID INT NOT NULL AUTO_INCREMENT,
                  ENROLLMENT varchar(100) NOT NULL,
                  NAME VARCHAR(50) NOT NULL,
@@ -416,11 +423,14 @@ def subjectchoose():
                      );
                 """
                 ####Now enter attendance in Database
-                insert_data =  "INSERT INTO " + DB_Table_name + " (ID,ENROLLMENT,NAME,DATE,TIME) VALUES (0, %s, %s, %s,%s)"
+                insert_data =  "INSERT INTO " + DB_Table_name + " (ENROLLMENT,NAME,DATE,TIME) VALUES (%s, %s, %s,%s)"
                 VALUES = (str(Id), str(aa), str(date), str(timeStamp))
                 try:
                     cursor2.execute(sql)  ##for create a table
+                    connection.commit()
                     cursor2.execute(insert_data, VALUES)##For insert data into table
+                    connection.commit()
+                    connection.close()
                 except Exception as ex:
                     print(ex)  #
 
@@ -436,7 +446,7 @@ def subjectchoose():
                 root = tkinter.Tk()
                 root.title("Attendance of " + Subject)
                 root.configure(background='snow')
-                cs = 'C:/Users/indu shakya/Desktop/projects/Attendace_management_system/' + fileName
+                cs = 'C:/Users/HP/Desktop/Attendence_Management_System/' + fileName
                 with open(cs, newline="") as file:
                     reader = csv.reader(file)
                     r = 0
@@ -464,7 +474,7 @@ def subjectchoose():
 
     def Attf():
         import subprocess
-        subprocess.Popen(r'explorer /select,"C:/Users/indu shakya/Desktop/projects/Attendace_management_system/Attendance/-------Check atttendance-------"')
+        subprocess.Popen(r'explorer /select,"C:/Users/HP/Desktop/Attendence_Management_System/Attendence/"')
 
     attf = tk.Button(windo,  text="Check Sheets",command=Attf,fg="black"  ,bg="#FFA900"  ,width=12  ,height=1 ,activebackground = "Red" ,font=('times', 14, ' bold '))
     attf.place(x=430, y=255)
@@ -500,7 +510,7 @@ def admin_panel():
                 root.title("Student Details")
                 root.configure(background='snow')
 
-                cs = 'C:/Users/indu shakya/Desktop/projects/Attendace_management_system/StudentDetails/StudentDetails.csv'
+                cs = 'C:/Users/HP/Desktop/Attendence_Management_System/StudentDetails/StudentDetails.csv'
                 with open(cs, newline="") as file:
                     reader = csv.reader(file)
                     r = 0

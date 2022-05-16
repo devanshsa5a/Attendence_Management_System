@@ -9,5 +9,5 @@ cursorInsatnce        = connectionInstance.cursor()
 
     # SQL Statement to create a database
 
-sqlStatement            = "CREATE DATABASE "+ 'manually_fill_attendance'
+sqlStatement            = "CREATE DATABASE "+ 'hey'
 cursorInsatnce.execute(sqlStatement)
